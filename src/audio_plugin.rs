@@ -15,12 +15,11 @@ pub fn request_audio_system(
     mut event_reader: EventReader<RequestAudioEvent>,
 ) {
     for event in event_reader.read() {
-        let request_body = serde_json::json!({ "text": event.text });
 
         // Environment variable for API key
         let api_key = env::var("ELEVEN_LABS_API_KEY").expect("ELEVEN_LABS_API_KEY must be set");
         let voice_id = "ZiJr5cZOXQztQsR7bLrz";
-        let text = "Hello, this is a test message.";
+        let text = event.text.clone();
         let model_id = "eleven_multilingual_v2";
         let stability = 0.5;
         let similarity_boost = 0.5;
