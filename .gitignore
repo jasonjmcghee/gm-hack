@@ -1,0 +1,8 @@
+/target
+.env
+/src/slime
+/src/base_screen_space_material.rs
+/src/screen_space_quad.rs
+/src/custom_material.rs
+/assets/shaders
+.idea
