@@ -70,7 +70,7 @@ fn main() {
         .add_event::<MovementEvent>()
         .add_event::<RequestAudioEvent>()
         .add_systems(Startup, setup)
-        .add_systems(Update, request_audio_system)
+        // .add_systems(Update, request_audio_system)
         .add_systems(Update, keyboard_input)
         .add_systems(Update, update_map)
         .add_systems(Update, chat_writer);
@@ -236,22 +236,22 @@ fn keyboard_input(
     mut action_writer: EventWriter<MovementEvent>,
 ) {
     // Check for left movement keys
-    if keyboard.pressed(KeyCode::KeyA) {
+    if keyboard.just_pressed(KeyCode::ArrowLeft) {
         action_writer.send(MovementEvent::Left);
     }
 
     // Check for right movement keys
-    if keyboard.pressed(KeyCode::KeyD) {
+    if keyboard.just_pressed(KeyCode::ArrowRight) {
         action_writer.send(MovementEvent::Right);
     }
 
     // Check for left movement keys
-    if keyboard.pressed(KeyCode::KeyW) {
+    if keyboard.just_pressed(KeyCode::ArrowUp) {
         action_writer.send(MovementEvent::Up);
     }
 
     // Check for right movement keys
-    if keyboard.pressed(KeyCode::KeyS) {
+    if keyboard.just_pressed(KeyCode::ArrowDown) {
         action_writer.send(MovementEvent::Down);
     }
 }

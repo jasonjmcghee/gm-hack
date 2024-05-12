@@ -117,13 +117,41 @@ impl Plugin for GroqPlugin {
             .add_event::<TypedResponse<ChatCompletionResponse>>()
             .add_event::<ChatInputRequest>()
             .add_event::<SceneUpdate>()
-            .insert_resource(AllMessages { messages: vec![
-                ChatMessage::system_prompt()
-            ] })
+            .insert_resource(AllMessages { messages: vec![] })
+            .add_systems(Startup, initialize)
             .add_systems(Update, chat_reader)
             .add_systems(Update, handle_response)
             .register_request_type::<ChatCompletionResponse>();
     }
+}
+
+fn initialize(mut all_messages: ResMut<AllMessages>, mut ev_request: EventWriter<TypedRequest<ChatCompletionResponse>>) {
+    let api_key = env::var("GROQ_API_KEY").expect("GROQ_API_KEY must be set");
+
+    all_messages.messages.push(ChatMessage::system_prompt());
+    all_messages.messages.push(ChatMessage { role: "user".to_string(), content: "Let's play a game!".to_string() });
+
+    let request_body = ChatCompletionRequest {
+        messages: all_messages.messages.clone(),
+        model: "llama3-70b-8192".to_string(),
+        temperature: 1.0,
+        max_tokens: 1024,
+        top_p: 1.0,
+        stream: false,
+        response_format: ResponseFormat { r#type: "json_object".to_string() },
+        stop: None,
+    };
+
+    ev_request.send(
+        HttpClient::new()
+            .post("https://api.groq.com/openai/v1/chat/completions")
+            .headers(&[
+                ("Authorization", &format!("Bearer {}", api_key)),
+                ("Content-Type", "application/json")
+            ])
+            .json(&request_body)
+            .with_type::<ChatCompletionResponse>(),
+    );
 }
 
 #[derive(Event)]
@@ -153,9 +181,6 @@ pub fn chat_writer(
             }).unwrap()
         });
     }
-    event_writer.send(ChatInputRequest {
-        text: "Hello".to_string()
-    });
 }
 
 

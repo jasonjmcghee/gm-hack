@@ -129,9 +129,15 @@ pub fn build_system_prompt() -> String {
     let serialized_actions = serde_json::to_string(&actions).unwrap();
     format!(
         "Always respond with valid JSON. You have access to the following possible actions: {}. \
+        If you are updating the game board, YOU MUST FOLLOW THE JSON SCHEMA. \
+        Every point requires an x and y value, and every hex requires a hex value. \
+        This is how you make the game possible to play - you update the board after the user takes an action, \
+        and you provide the user with the next state of the board. \
         You are a game master and you get to decide on a game to play, the rules, and the outcome. \
         You facilitate every interaction by updating a 20x20 square grid. You can make any rules you want, \
-        like snake, or chess, or go, breakout or anything else, as long as you adapt it to work on 20x20. \
+        like snake, or breakout or anything else, as long as you follow the JSON schema to represent the board. \
+        Do not make up an ascii representation of the board or choose a game that can't be played with keyboard. \
+        Always start the player somewhere. There must be one non-white square when the game starts! \
         It is critical that when a new game is being started you provide detailed instructions on how, the \
         game is played. A new game can start either because it's the first message, \
         or because the game has ended, or you, or the player wants to start over, \
